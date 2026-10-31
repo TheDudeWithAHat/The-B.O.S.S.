@@ -1,9 +1,13 @@
+
+# this is just set up so that the servos can be controled
 from time import *
 from adafruit_servokit import ServoKit
 kit = ServoKit(channels=16)
 
+# this is how fast the robot cycles through instructions
 bpm = 100
 
+#f1 means fret level one is being used, s1 means any of the frets on string one is being used. etc for the rest of the numbers
 f1 = "inactive"
 f2 = "inactive"
 f3 = "inactive"
@@ -19,7 +23,7 @@ s6 = "inactive"
 
 
     
-
+# s0x means "reset the finger associated with this fret level"
 def s01():
     global f1
 
@@ -70,28 +74,36 @@ def s05():
     kit.servo[0].angle = 90
     f5 = "inactive"
 
-
+#all sxx follow the same template, so I will explain what each line of code is doing here. That way I don't have to retype to 30+ times
+# s61 means the first fret on the 6th string. Length is asking how long to hold it. 1 is a quarter note and the default
 
 def s61(lngth=1): 
+    #this allows the computer to keep track of relevent frets and strings and check if they are active or not
     global f1
     global f2
     
     global s6
 
+    #this resets the first fret level so we can use it
     s01()
-    
+
+    # if the 6th string or the second fret is being used, reset it. All adjacent frets have to be cleared so the fingers don't hit eachother
     if s6 == "active":
         s00()
     else:
         if f2 == "active":
             s02()
 
+    # set the servos to the position needed to hold down the string
     'finger'
     kit.servo[8].angle = 18
+    # small pause so that it finger is fully in place before the knuckle moves. Needed so it doesn't miss
     sleep(.075)
     'knuckle'
     kit.servo[9].angle = 60
+    #wait until the notes duration has passed to move on
     sleep(60/bpm*lngth)
+    #Tell the computer we're using first fret and 6th string
     f1 = "active"
     s6 = "active"
 
@@ -827,7 +839,7 @@ def s15(lngth=1):
     f5 = "active"
     s1 = "active"
 
-
+#resets all fingers
 def s00(isNote=False, lngth=1):
     global f1
     global f2
@@ -876,6 +888,7 @@ def s00(isNote=False, lngth=1):
     if isNote:
         sleep(60/bpm*lngth)
 
+#cycles through every position to check if code is working. Used only for debugging
 def testF0():
     s01()
     s02()
@@ -1032,6 +1045,8 @@ def testAll():
     testStrings()
     testFrets()
 
+
+# This does the little count in dance before the song starts
 def startUp():
     s00()
     kit.servo[0].angle += 25     
@@ -1063,7 +1078,7 @@ def startUp():
     sleep(60/bpm)
 
 
-
+# these are the songs. Its a list of positions to cycle through. If you want to play one, call the function at the bottom and set bpm
 def setFireToTheRain():
     startUp()
 
